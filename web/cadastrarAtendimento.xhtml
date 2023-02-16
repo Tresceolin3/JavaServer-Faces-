@@ -1,0 +1,132 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Atendimentos</h2>
+        <p:panel header="Atendimentos Cadastrados">  
+            <p:outputPanel id="atendimento">
+                <p:dataTable id="dataTable" var="atendimento"
+                             value="#{atendimentoBean.all}"
+                             widgetVar="tabelaAtendimentos"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{atendimentoBean.atendimentosFiltrados}">
+                    <p:column headerText="Sintomas" filterBy="sintomas" footerText="startsWith">  
+                        <h:outputText value="#{atendimento.sintomas}" />  
+                    </p:column>
+                    <p:column headerText="Medicacao" filterBy="medicacao" footerText="startsWith">  
+                        <h:outputText value="#{atendimento.medicacao}" />  
+                    </p:column>
+                    <p:column filterBy="modalidade"
+                              headerText="Modalidade" footerText="exact"
+                              filterOptions="#{atendimentoBean.getModalide(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{atendimento.modalidade}" />
+                    </p:column>
+                    <p:column filterBy="planoSaude"
+                              headerText="Plano Saude" footerText="exact"
+                              filterOptions="#{atendimentoBean.getPlanoSaude(true)}"
+                              filterMatchMode="exact">
+                        <h:outputText value="#{atendimento.planoSaude}" />
+                    </p:column>
+
+                    <p:column headerText="Ação">  
+                        <p:commandButton value="Consultar"
+                                         actionListener="#{atendimentoBean.consultar(atendimento)}"
+                                         oncomplete="panelAtendimento.show();"
+                                         update=":form:displayAtendimento" /> 
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{atendimentoBean.inserir()}"
+                                     oncomplete="panelAtendimento.show();"
+                                     update=":form:displayAtendimento" />   
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Atendimento" id="dadosAtendimento" widgetVar="panelAtendimento"
+                 visible="false" closable="true" style="margin-top:10px;">
+            <p:messages id="erroClinica"/>
+            <h:panelGrid id="displayAtendimento" columns="1" styleClass="grid">
+                <p:panel>
+                    <p:wizard
+                        flowListener="#{atendimentoBean.onFlowProcess}"
+                        backLabel="Anterior"
+                        nextLabel="Proximo">
+                        <p:tab id="dadosInfoAtendimento" title="1. Informacoes">
+                            <p:panel header="Informacoes">
+                                <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+
+                                    <h:outputText value="Sintomas *" />
+                                    <p:inputText id="sintomasInputText" required="false" label="Sintomas"
+                                                 value="#{atendimentoBean.value.sintomas}" styleClass="ipt-large" />
+                                    <p:message for="sintomasInputText" />
+                                    <h:outputText value="Medicacao *" />
+                                    <p:inputText id="medicacaoInputText" required="false" label="Medicacao"
+                                                 value="#{atendimentoBean.value.medicacao}" styleClass="ipt-large" />
+                                    <p:message for="medicacaoInputText" />   
+                                    <h:outputText value="Modalidade *" />
+                                    <p:selectOneMenu id="modalidadeSelectOneMenu"
+                                                     value="#{atendimentoBean.value.modalidade}"
+                                                     required="false" label="Modalidade" style="width:100px">
+                                        <f:selectItems value="#{atendimentoBean.getModalide(false)}" />
+                                    </p:selectOneMenu>
+                                    <p:message for="modalidadeSelectOneMenu" />
+                                     <h:outputText value="Plano Saude *" />
+                                    <p:selectOneMenu id="plano_saudeSelectOneMenu"
+                                                     value="#{atendimentoBean.value.planoSaude}"
+                                                     required="false" label="Plano Saude" style="width:100px">
+                                        <f:selectItems value="#{atendimentoBean.getPlanoSaude(false)}" />
+                                    </p:selectOneMenu>
+                                    <p:message for="plano_saudeSelectOneMenu" />
+                                    <h:outputText value="Data *" />
+                                    <p:inputMask id="dataInputMask" required="false"
+                                                 label="Data" mask="99/99/9999"
+                                                 value="#{atendimentoBean.value.data}">
+                                        <f:convertDateTime pattern="dd/mm/yyyy" locale="pt_BR"/>
+                                    </p:inputMask>
+                                    <p:message for="dataInputMask" />
+
+                                </h:panelGrid>  
+                            </p:panel>
+                        </p:tab>
+                        <p:tab id="prontuarios" title="2. Prontuarios">
+                            <p:panel header="Prontuarios">
+                                <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">
+                                    <h:outputText value="Observacao " />
+                                    <p:inputText id="observacaoInputText" required="false" label="Observacao"
+                                                 value="#{atendimentoBean.value.observacao}" styleClass="ipt-large" />
+                                    <p:message for="observacaoInputText" />
+                                    <h:outputText value="Peso " />
+                                    <p:inputText id="pesoInputText" required="false" label="Peso"
+                                                 value="#{atendimentoBean.value.peso}" styleClass="ipt-large" />
+                                    <p:message for="pesoInputText" />
+                                    <h:outputText value="Altura " />
+                                    <p:inputText id="alturaInputText" required="false" label="Altura"
+                                                 value="#{atendimentoBean.value.altura}" styleClass="ipt-large" />
+                                    <p:message for="alturaInputText" />
+                                    <h:outputText value="Temperatura " />
+                                    <p:inputText id="temperaturaInputText" required="false" label="Temperatura"
+                                                 value="#{atendimentoBean.value.temperatura}" styleClass="ipt-large" />
+                                    <p:message for="temperaturaInputText" />
+                                </h:panelGrid>  
+                            </p:panel>
+                        </p:tab>
+                    </p:wizard>
+                    <h:panelGroup rendered="#{!atendimentoBean.consultar}">
+                        <p:commandButton value="Inserir" action="#{atendimentoBean.save()}" ajax="false" icon="ui-icon-circle-plus"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{atendimentoBean.consultar}">
+                        <p:commandButton value="Alterar" action="#{atendimentoBean.update()}" ajax="false" icon="ui-icon-pencil"/>
+                        <p:commandButton value="Remover" action="#{atendimentoBean.delete()}" ajax="false" icon="ui-icon-circle-minus"/>
+                    </h:panelGroup>
+                </p:panel>
+            </h:panelGrid>  
+        </p:panel>
+    </ui:define>
+</ui:composition>

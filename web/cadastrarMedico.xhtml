@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Medicos</h2>
+        <p:panel header="Medicos Cadastrados">  
+            <p:outputPanel id="medico">
+                <p:dataTable id="dataTable" var="medico"
+                             value="#{medicoBean.all}"
+                             widgetVar="tabelaMedicos"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{medicoBean.medicosFiltrados}">
+                    <p:column headerText="Nome" filterBy="nome" footerText="startsWith">  
+                        <h:outputText value="#{medico.nome}" />  
+                    </p:column>
+                    <p:column headerText="Plantao">  
+                        <h:outputText value="#{medico.plantao}" />  
+                    </p:column>
+                    <p:column headerText="Ação">  
+                        <p:commandButton value="Consultar"
+                                         actionListener="#{medicoBean.consultar(medico)}"
+                                         oncomplete="panelMedico.show();"
+                                         update=":form:displayMedico" /> 
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{medicoBean.inserir()}"
+                                     oncomplete="panelMedico.show();"
+                                     update=":form:displayMedico" />   
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Medico" id="dadosMedico" widgetVar="panelMedico" 
+                 visible="false" closable="true" style="margin-top:10px;">  
+            <p:messages id="erroClinica"/> 
+            <h:panelGrid id="displayMedico" columns="1" styleClass="grid">
+                <p:panel> 
+                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">  
+                        <h:outputText value="Nome *" />
+                        <p:inputText id="nomeInputText" required="false" label="Nome"
+                                     value="#{medicoBean.value.nome}" styleClass="ipt-large" />
+                        <p:message for="nomeInputText" />
+                        <h:outputText value="Plantao: *" />  
+                        <p:selectBooleanCheckbox id="plantaoSelectBooleanCheckbox"
+                                                 value="#{medicoBean.value.plantao}" />
+                        <p:message for="plantaoSelectBooleanCheckbox"/>
+                    </h:panelGrid>  
+                </p:panel> 
+                <h:panelGroup rendered="#{!medicoBean.consultar}">
+                    <p:commandButton value="Inserir" action="#{medicoBean.save()}" ajax="false" icon="ui-icon-circle-plus"/>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{medicoBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{medicoBean.update()}" ajax="false" icon="ui-icon-pencil"/>
+                    <p:commandButton value="Remover" action="#{medicoBean.delete()}" ajax="false" icon="ui-icon-circle-minus"/>
+                </h:panelGroup>
+            </h:panelGrid>  
+        </p:panel>  
+    </ui:define>
+</ui:composition>

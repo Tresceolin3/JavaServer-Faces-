@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template.xhtml">
+    <ui:define name="conteudo">
+        <h2>Cadastrar Pacientes</h2>
+        <p:panel header="Pacientes Cadastrados">  
+            <p:outputPanel id="paciente">
+                <p:dataTable id="dataTable" var="paciente"
+                             value="#{pacienteBean.all}"
+                             widgetVar="tabelaPacientes"
+                             emptyMessage="Nenhum registro encontrado"
+                             filteredValue="#{pacienteBean.pacientesFiltrados}">
+                    <p:column headerText="Nome" filterBy="nome" footerText="startsWith">  
+                        <h:outputText value="#{paciente.nome}" />  
+                    </p:column>
+                    <p:column headerText="Idade">  
+                        <h:outputText value="#{paciente.idade}" />  
+                    </p:column>
+                    <p:column headerText="Ação">  
+                        <p:commandButton value="Consultar"
+                                         actionListener="#{pacienteBean.consultar(paciente)}"
+                                         oncomplete="panelPaciente.show();"
+                                         update=":form:displayPaciente" /> 
+                    </p:column>
+                </p:dataTable>
+                <p:panel>
+                    <p:commandButton value="Cadastrar"
+                                     actionListener="#{pacienteBean.inserir()}"
+                                     oncomplete="panelPaciente.show();"
+                                     update=":form:displayPaciente" />   
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+        <p:panel header="Dados do Paciente" id="dadosPaciente" widgetVar="panelPaciente" 
+                 visible="false" closable="true" style="margin-top:10px;">  
+            <p:messages id="erroClinica"/> 
+            <h:panelGrid id="displayPaciente" columns="1" styleClass="grid">
+                <p:panel> 
+                    <h:panelGrid columns="3" columnClasses="label, value" styleClass="grid">  
+                        <h:outputText value="Nome *" />
+                        <p:inputText id="nomeInputText" required="false" label="Nome"
+                                     value="#{pacienteBean.value.nome}" styleClass="ipt-large" />
+                        <p:message for="nomeInputText" />
+                        
+                        <h:outputText value="Idade *" />
+                        <p:inputText id="idadeInputText" required="false" label="Idade"
+                                     value="#{pacienteBean.value.idade}" styleClass="ipt-large" />
+                        <p:message for="idadeInputText" />
+                        
+                        
+                    </h:panelGrid>  
+                </p:panel> 
+                <h:panelGroup rendered="#{!pacienteBean.consultar}">
+                    <p:commandButton value="Inserir" action="#{pacienteBean.save()}" ajax="false" icon="ui-icon-circle-plus"/>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{pacienteBean.consultar}">
+                    <p:commandButton value="Alterar" action="#{pacienteBean.update()}" ajax="false" icon="ui-icon-pencil"/>
+                    <p:commandButton value="Remover" action="#{pacienteBean.delete()}" ajax="false" icon="ui-icon-circle-minus"/>
+                </h:panelGroup>
+            </h:panelGrid>  
+        </p:panel>  
+    </ui:define>
+</ui:composition>
